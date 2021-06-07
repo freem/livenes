@@ -12,3 +12,12 @@ This includes a VRC6 and FDS variant of the tool, which allows you to switch bet
 
 The batch files are there as examples. 
 If you add nintendulator.exe in the folder where you compile, it will auto start the emulator with the rom you freshly build.
+
+## VT02 version
+Some hardware produced by V.R. Technology allows for the use of a second APU.
+
+There are two binaries included:
+* live_VT02.nes - for use with NintendulatorNRS
+* live_VT02.bin - for use with real hardware, NintendulatorNRS, EmuVT, or MAME
+
+This has not yet been tested on real hardware. NintendulatorNRS seems to work.

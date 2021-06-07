@@ -59,6 +59,34 @@ IFDEF FDS ; mapper "22" note CHRAM MUST also be defined!
 INCLUDE layout_FDS.asm
 ENDIF
 
+; freem note: also allow for non-headered image, for use with MAME or real hardware
+IFDEF VT02 ; NES 2.0 Mapper 256
+IFNDEF VT02_BIN
+.db "NES",$1A
+.db $20   ; Size of PRG ROM in 16 KB units (512KiB ROM image)
+.db $00   ; Size of CHR ROM in 8 KB units (Unlike above, 0 *does not* imply the presence of CHR-RAM)
+.db $00   ; flags 6 (mapper 256/$100)
+.db $0B   ; flags 7 (mapper 256/$100, NES 2.0 identifier, and Extended Console)
+.db $01   ; flags 8 (mapper 256/$100, submapper 0)
+.db $00   ; PRG/CHR size most significant bits
+.db $00   ; PRG-RAM/EEPROM
+.db $00   ; CHR-RAM size (this is what implies the presence of CHR-RAM... which we don't have.)
+.db $00   ; Intended CPU/PPU timing (0=NTSC, 1=PAL, 2=multi, 3=Dendy; VTxx hardware can only be 0 or 3)
+.db $06   ; Extended Console Type ($06=VT02, $07=VT03, $08=VT09; VT32 and VT369 lack second APU)
+.db $00   ; misc. roms
+.db $01   ; default expansion device (standard controller)
+ENDIF
+
+; include CHR at $0000
+.incbin "bitmaps.chr"
+
+; generate padding to get the rest of the data in the right place
+.dsb $7A000,0
+
+.org $C000
+INCLUDE layout_VT02.asm
+ENDIF
+
 ;Always present whatever the mapper
 INCLUDE layout_RP2A03.asm
 
@@ -718,6 +746,8 @@ ELSE
 ENDIF
 
 ; for mappers with CHRs...
-IFNDEF CHRRAM  
+IFNDEF CHRRAM
+IFNDEF VT02 ; VTxx/OneBus ROM images expect CHR data at the beginning
 .incbin "bitmaps.chr"
+ENDIF ; VT02
 ENDIF
